@@ -4,9 +4,11 @@ namespace AngelJobs.ViewModel
 {
     using System;
     using System.Net;
+    using System.Windows.Navigation;
     using AngelJobs.Model;
     using GalaSoft.MvvmLight.Command;
     using GalaSoft.MvvmLight.Views;
+    using NavigationService = GalaSoft.MvvmLight.Views.NavigationService;
 
     public class AngelListLoginPageViewModel : ViewModelBase
     {
@@ -21,6 +23,7 @@ namespace AngelJobs.ViewModel
             _navigationService = navigationService;
         }
 
+        
         //public RelayCommand BrowseToLoginCommand
         //{
         //    get

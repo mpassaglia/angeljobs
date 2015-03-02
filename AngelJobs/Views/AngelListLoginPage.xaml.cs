@@ -12,10 +12,13 @@ using AngelJobs.Resources;
 namespace AngelJobs
 {
     using System.ServiceModel.Channels;
+    using System.Threading.Tasks;
+    using Windows.Web.Http;
 
     public partial class AngelListLoginPage : PhoneApplicationPage
     {
         private const string ClientId = "46df257880dfa6959ca388c8389daf3ced0f5e3c65006a4e";
+        private const string ClientSecret = "fbec8e3a42c396212c4b0b27cfac3692efb2ca0236afb79d";
         // Constructor
         public AngelListLoginPage()
         {
@@ -46,8 +49,9 @@ namespace AngelJobs
             try
             {
                 var url = "https://angel.co/api/oauth/authorize?" +
-                                   "client_id=" + ClientId +
-                                   "&response_type=code";
+                          "client_id=" + ClientId +
+                          "&scope=talent%20message%20email" +
+                          "&response_type=code";
 
                 webBrowser1.Navigate(new Uri(url));
             }
@@ -57,27 +61,33 @@ namespace AngelJobs
             }
         }
 
-//        private void WebBrowser1_OnNavigated(object sender, NavigationEventArgs e)
-//        {
-//            if (e.Uri.IsAbsoluteUri)
-//            {
-//                string code = e.Uri.Query.ToString();
-//                string[] split = code.Split(new Char[] { '=' });
-//                string codeString = split.GetValue(0).ToString();
-//                string codeValue = split.GetValue(1).ToString();
-//                if (codeValue.Length > 0)
-//                {
-//                    var url = "https://graph.facebook.com/oauth/access_token?client_id=<Your Key>
-//&redirect_uri=https://www.facebook.com/connect/login_success.html&client_secret=<Your Secret>&code=" + codeValue;
- 
-//                    //call access token
-//                    WebRequest request = WebRequest.Create(url); //FB access token Link
-//                    request.BeginGetResponse(new AsyncCallback(this.ResponseCallback_AccessToken), request);
-//                }
-//            }
-//            else
-//                return;
+        private async void LoginActivated(object sender, NavigationEventArgs e)
+        {
+            if (!e.Uri.IsAbsoluteUri) return;
+            var code = e.Uri.Query.Split('=');
+            var codeString = code.GetValue(0).ToString();
+            var codeValue = code.GetValue(1).ToString();
 
-//        }
+            if (!codeString.Equals("?code")) return;
+            var url = "https://angel.co/api/oauth/token?" +
+                      "client_id=" + ClientId +
+                      "&client_secret=" + ClientSecret +
+                      "&code=" + codeValue +
+                      "&grant_type=authorization_code";
+
+            var response = await GetAccessToken(url);
+
+            //TODO: Pass response (access token) to Jobs page 
+        }
+
+        public async Task<string> GetAccessToken(string url)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.PostAsync(new Uri(url), null);
+
+                return await response.Content.ReadAsStringAsync();
+            }
+        }
     }
 }

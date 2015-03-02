@@ -15,12 +15,12 @@
                             shell:SystemTray.IsVisible="True"
                             DataContext="{Binding Login, Source={StaticResource Locator}}">
 
-    <Grid x:Name="ContentPanel">
+    <Grid x:Name="ContentPanel" DataContext="">
         <phone:WebBrowser IsScriptEnabled="True" 
                           HorizontalAlignment="Center" 
-                          
                           x:Name="webBrowser1" 
-                          VerticalAlignment="Top" Height="740" Width="441" Margin="20,0,19,0"/>
+                          VerticalAlignment="Top" Height="740" Width="441" Margin="20,0,19,0"
+                          Navigated="LoginActivated"/>
     </Grid>
 
 
